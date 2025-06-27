@@ -1,0 +1,23 @@
+@RestController
+@RequestMapping("/api/auth")
+public class authController {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody User user) {
+        userService.registerUser(user);
+        return ResponseEntity.ok("User registered");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        User user = userService.authenticate(request.getUsername(), request.getPassword());
+        String token = jwtUtil.generateToken(user.getUsername());
+        return ResponseEntity.ok(new AuthResponse(token));
+    }
+}
